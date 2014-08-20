@@ -42,15 +42,7 @@ public class Bounding {
 		bounding.populate();
 		return bounding;
 	}
-	
-	private Bounding(Contour contour, double polyPixelTol, double angleTol)
-	{
-		this.contour = contour;
-		this.polyPixelTol = polyPixelTol;
-		this.angleTol = angleTol;
-		populate();
-	}
-	
+		
 	public Contour getContour() {
 		return contour;
 	}

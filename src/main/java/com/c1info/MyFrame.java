@@ -1,6 +1,5 @@
 package com.c1info;
 
-import georegression.metric.UtilAngle;
 import georegression.struct.point.Point2D_F64;
 import georegression.struct.point.Point2D_I32;
 
@@ -12,7 +11,6 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
-import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.IOException;
@@ -287,17 +285,20 @@ public class MyFrame extends JFrame implements ChangeListener {
 		Graphics2D g2 = gui.getImage(0,4).createGraphics();
 		g2.setStroke(new BasicStroke(3f));				
 		Histogram histogram = new Histogram(snippet, clusterSizeValue);		
-		Map<Double, List<Rectangle>> data = histogram.getData();
-		for(Map.Entry<Double, List<Rectangle>> entry:data.entrySet())
+		Map<Double, List<Bounding>> data = histogram.getData();
+		for(Map.Entry<Double, List<Bounding>> entry:data.entrySet())
 		{
-			List<Rectangle> rectangles = entry.getValue();
+			List<Bounding> boundings = entry.getValue();
 			Color color = Util.getRandomColor();
-			for (Rectangle rectangle:rectangles)
+			for (Bounding bounding:boundings)
 			{
-				List<Point2D_I32> points = getPointIntFromRect(rectangle);
-				g2.setColor(color);
-				VisualizeShapes.drawPolygon(points,true,g2);
-				drawPoints(g2, rectangle);
+				if (bounding.getMeanIntensity() < 255.0d)
+				{
+					List<Point2D_I32> points = getPointIntFromRect(bounding.getRectangle());
+					g2.setColor(color);
+					VisualizeShapes.drawPolygon(points,true,g2);
+					drawPoints(g2, bounding.getRectangle());
+				}
 			}
 		}							
 	}
@@ -349,7 +350,7 @@ public class MyFrame extends JFrame implements ChangeListener {
 	private void printHistogram(Snippet snippet)
 	{
 		Histogram histogram = new Histogram(snippet, clusterSizeValue);		
-		Map<Double, List<Rectangle>> data = histogram.getData();
+		Map<Double, List<Bounding>> data = histogram.getData();
 		System.err.println("step: " + histogram.getStep());
 		System.err.println("mean: " + histogram.mean());
 		System.err.println("min: " + histogram.getMin());
@@ -357,8 +358,14 @@ public class MyFrame extends JFrame implements ChangeListener {
 		SortedSet<Double> keys = new TreeSet<Double>(data.keySet());
 		for(Double key:keys)
 		{
-			System.err.println(key + " : " + data.get(key).size() + " : " + data.get(key));
-		}
+			System.err.println(key + " : " + data.get(key).size());
+			List<Bounding> value = data.get(key);
+			for (Bounding bounding:value)
+			{
+				System.err.println(bounding.getRectangle() + "," + bounding.getMeanIntensity() + ",");
+			}
+		}		
+
 	}
 	
 	protected List<Point2D_I32> getIntInstances(List<Point2D_F64> points)

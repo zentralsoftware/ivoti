@@ -172,15 +172,14 @@ public class CropImageTest {
 	@Test
 	public void cropArbitraryShape() throws IOException
 	{
-		BufferedImage input = ImageIO.read(new File("/Users/fadnan/Documents/workspace-sts-3.4.0.RELEASE/c1info/src/test/resources/cropTest/000167400104_637x1050.jpg"));
+		BufferedImage input = ImageIO.read(new File("src/test/resources/cropTest/000167400104_637x1050.jpg"));
 		BufferedImage out = new BufferedImage(input.getWidth(), input.getHeight(), input.getType());
-		out.getGraphics().setColor(Color.white);
 		out.getGraphics().fillRect(0, 0, out.getWidth(), out.getHeight());
 		Polygon p = new Polygon();
 		p.addPoint(0, 0);
-		p.addPoint(0, input.getHeight()/2);
-		p.addPoint(input.getWidth()/2, input.getHeight()/2);
-		p.addPoint(input.getWidth()/2, 0);
+		p.addPoint(0, input.getHeight());
+		p.addPoint(input.getWidth(), input.getHeight());
+		p.addPoint(input.getWidth(), 0);
 		Graphics2D g2 = out.createGraphics();
 		g2.setClip(p);
 		g2.drawImage(input, 0, 0, null);
@@ -189,5 +188,6 @@ public class CropImageTest {
 		// the mean pixel value is often a reasonable threshold when creating a binary image
 		double mean = ImageStatistics.mean(outFloat32);	
 		System.err.println("mean: " + mean);
+		Util.saveImage(out, "jpg", "oyeah");
 	}
 }

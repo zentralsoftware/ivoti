@@ -76,7 +76,7 @@ public class Snippet {
 		List<Contour> contours = BinaryImageOps.contour(binary, ConnectRule.EIGHT,null);
 		for (Contour contour:contours)
 		{
-			Bounding bounding = Bounding.getInstance(scaled, contour, this.pixelValue, this.angleTol);
+			Bounding bounding = Bounding.getInstance(bw, contour, this.pixelValue, this.angleTol);
 			boundings.add(bounding);
 		}
 	}
@@ -116,7 +116,14 @@ public class Snippet {
 		ThresholdImageOps.threshold(input,binary,(float)mean,true);
 
 		// reduce noise with some filtering
-		BinaryImageOps.removePointNoise(binary, filtered);		
+		 BinaryImageOps.removePointNoise(binary, filtered);		
+		
+		// remove small blobs through erosion and dilation
+		// The null in the input indicates that it should internally declare the work image it needs
+		// this is less efficient, but easier to code.
+		//filtered = BinaryImageOps.erode8(filtered, 1, null);
+		//filtered = BinaryImageOps.dilate8(filtered, 1, null);
+		
 		return filtered;
 		
 	}		
